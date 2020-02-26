@@ -1,15 +1,18 @@
 import java.io.Serializable;
-//package messagetypes; 
+
 
 public class Message implements MessageTypes, Serializable
 {
   private static final long serialVersionUID = 9185401210109757710L;
   int type;
-  Object content;
+  String msgText;
+  String senderName;
 
-  public int message(int type)
+
+
+  public Message(String sender)
   {
-    this.type= type;
+	  this.senderName = sender;
   }
 
   public int getType ()
@@ -18,15 +21,35 @@ public class Message implements MessageTypes, Serializable
 
     }
 
-  public Object getContent ()
+  public String constructMessage ()
   {
-    return content;
+	String message = senderName + ": " + msgText;
+    return msgText;
   }
 
 
-  public void setContent (Object content)
+  public void setText (String content)
   {
-    this.content = content;
+    this.msgText = content;
+  }
+
+  public String typeToMsg(int type)
+  {
+	  String outString = "";
+	  switch(type)
+	  {
+		  case JOIN:
+		  	outString = "has requested to join the chat.";
+			break;
+
+		  case JOINED:
+		   	outString = "has joined the chat.";
+			break;
+
+		  case LEAVE:
+		  	outString = "has left the chat.";
+	  }
+	  return outString;
   }
 
 }
