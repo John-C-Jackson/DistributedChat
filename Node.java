@@ -48,6 +48,10 @@ public class Node
 		for( Node item : chatList ) nodeList.add( item );
 	}
 	
+	// first thing to run
+	// calls Sender
+	public void join();
+	
     public int getPort()
     {
     	return portNumber;
