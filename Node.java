@@ -13,15 +13,29 @@ public class Node
 
     public static void main(String[] args) throws IOException
     {
-    	if (args.length != 3) {
+    	// not the first node
+    	if (args.length == 3)
+    	{
+    		hostName = args[0];
+    		portNumber = Integer.parseInt(args[1]);
+    		name = args[2];  
+        } 
+        
+        // first node
+        else if ( args.length == 2) 
+        {
+        	hostName = args[0];
+        	name = args[1];
+        	portNumber = 4000;
+        }
+        
+        else
+        {
             System.err.println(
-                "Usage: java Node <host name> <port number> <your name>");
+                "Usage: (first node in network): \njava Node <host name> [<port name>] <your name>\n");
             System.exit(1);
         }
-    
-    	hostName = args[0];
-    	portNumber = Integer.parseInt(args[1]);
-    	name = args[2];    
+      
     }
     
 	/*
@@ -30,7 +44,7 @@ public class Node
 	*/
 	public ArrayList<Node> cloneList( ArrayList<Node> chatList )
 	{
-		nodeList = new ArrayList<Node>(chatList.size());
+		nodeList = new ArrayList<Node>();
 		for( Node item : chatList ) nodeList.add( item );
 	}
 	
