@@ -10,7 +10,7 @@ public class Node
 
     public static void main(String[] args) throws IOException
     {
-    	if (args.length != 2) {
+    	if (args.length != 3) {
             System.err.println(
                 "Usage: java Node <host name> <port number> <your name>");
             System.exit(1);
