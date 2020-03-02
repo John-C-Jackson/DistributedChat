@@ -4,59 +4,61 @@ import java.util.*;
 
 public class Receiver implements Runnable
 {
-  int inImportNumber;
-//  ReceiverWorker runHolder;
-//  Thread threadHolder;
-  Node parentNode;
-  ServerSocket serverSocket;
+	Node parentNode;
+	ServerSocket serverSocket;
 
-  //
-  public Receiver(Node parentNode){
-	  this.parentNode = parentNode;
+	// constructor sets the receiver's parent node
+	public Receiver(Node parentNode)
+	{
+		this.parentNode = parentNode;
 
-}
+	}
 
-  @Override
-  public void run()
-  {
-      try
-        {
-        serverSocket = new ServerSocket(parentNode.getPort());
-System.out.println(parentNode.getPort());
-        // does this loop need to be in a thread or something?
-        // worried that the loop will stop the rest of the program from running
-            // while the server socket is active
-            while(true)
-            {
-// PRINT STATEMENT FOR INITIAL TESTING... REMOVE LATER
-System.out.println("running...");
-          
-if(serverSocket == null)
-{
-    System.out.println("serverSocket null");
-}
-            // crreates a client socket that the server socket has connected to
-                Socket cSocket = serverSocket.accept();
-System.out.println("after accepting");
+	@Override
+	public void run()
+	{
+		try
+		{
+			// create a server socket
+			serverSocket = new ServerSocket(parentNode.getPort());
+			System.out.println("Your port number is: " + parentNode.getPort() +
+				". Other nodes can use this to join the chat.");
 
-                // creates a new thread with the runHolder
-                Thread threadHolder = new Thread(new ReceiverWorker(cSocket,parentNode ));
-                // starts the thread
-                threadHolder.start();
-            }
-        }
-        catch (IOException e)
-        {
-          System.err.println(e);
-        }
-  }
+			boolean inChat = true;
+			// while the server socket is active
+		    while(inChat)
+		    {
+				// check for null server socket
+				if(serverSocket == null)
+				{
+				    System.out.println("serverSocket null");
+				}
+
+		    	// creates a client socket that the server socket has connected to
+		        Socket cSocket = serverSocket.accept();
+
+		        // creates a new thread with the runHolder
+		        Thread threadHolder = new Thread(new ReceiverWorker(cSocket,parentNode ));
+
+		        // starts the thread
+		        threadHolder.start();
+
+				// update inChat variable
+				inChat = parentNode.isInChat();
+		    }
+		}
+		catch (IOException e)
+		{
+		  System.err.println(e);
+		}
+	}
 
 
 
 
-  public ServerSocket getServerSocket()
-  {
-	  return serverSocket;
-  }
+  // public ServerSocket getServerSocket()
+  // {
+	//   return serverSocket;
+  // }
 
 }

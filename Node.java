@@ -2,53 +2,46 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
-public class Node
+public class Node implements Serializable
 {
-	public Sender sender;
-	public Receiver receiver;
 	public ArrayList<Node> connections;
 	public String hostName;
 	public int portNumber;
 	public String name;
+	public boolean leftChat;
+
+	private static final long serialVersionUID = 9185401210109757711L;
 
     public static void main(String[] args) throws IOException
     {
-
-
-		//instantiate receiver / sender.
-		// while loop that takes in input and pumps to sender
-
     	// not the first node
     	if (args.length == 3)
     	{
+			// construct new node
 			Node chatNode = new Node(args[0], Integer.parseInt(args[1]), args[2]);
 
-			// construct and send join message
+			// construct join message
 			JoinMessage msg = new JoinMessage(chatNode);
 
-System.out.println(chatNode.hostName);
-System.out.println(chatNode.portNumber);
-System.out.println(chatNode.name);
-
-System.out.println("before chatNode.sendToConnections");
-
-System.out.println(msg + "--------------------  the message contains -------------");
-
-			chatNode.sendToConnections(msg);
-
-
-
-System.out.println("after sendToConnectionss");
+			// start sender thread with join message
+			chatNode.startSenderThread(Integer.parseInt(args[1]), args[0], msg, false);
 
         }
 
         // first node
         else if ( args.length == 2)
         {
-			Node chatNode = new Node(args[0], 4000, args[1]);
+			// construct new node
+			Node chatNode = new Node(args[0], 3999, args[1]);
 
+			// add yourself to list.
+			chatNode.addToList(chatNode);
 
-			System.out.println("Concurrency");
+			// construct join message
+			JoinMessage msg = new JoinMessage(chatNode);
+
+			// start sender thread with join message
+			chatNode.startSenderThread(4000, args[0], msg, true);
         }
 
         else
@@ -60,74 +53,121 @@ System.out.println("after sendToConnectionss");
 
     }
 
-	public Node(String ip, int port, String name)
+	// Node constructor method.
+	// Initializes member variables, starts receiver thread
+	public Node(String ip, int existingPort, String name)
 	{
 		this.hostName = ip;
-		this.portNumber = port;
+		this.portNumber = existingPort + 1;
 		this.name = name;
-	  (new Thread(new Receiver( this ))).start();
-//			addToList(this);
+		this.connections = new ArrayList<Node>();
+		this.leftChat = false;
+	  	new Thread(new Receiver( this )).start();
 
 	}
 
-	/*
-		When this node joins the network, updateList()
-		clones the current list of nodes from another node
-	*/
+
+
+	// clones the current list of nodes from another node
+	// used to obtain nodelist upon sending join message
 	public void cloneList( ArrayList<Node> chatList )
 	{
 		connections = new ArrayList<Node>();
 		for( Node item : chatList ) connections.add( item );
 	}
 
-	// first thing to run
-	// calls Sender
-	// public void join();
 
+	// returns portNumber
     public int getPort()
     {
     	return portNumber;
     }
 
+	// returns hostName
 	public String getIp()
 	{
 		return hostName;
 	}
 
+	// returns node name
     public String getName()
     {
     	return name;
     }
 
+	// returns connected nodes list
 	public ArrayList<Node> getConnections()
 	{
 		return connections;
 	}
 
-	public Receiver getReceiver()
-	{
-		return receiver;
-	}
-
+	// adds a new node to the list if it isn't already in there
+	// called upon receiving join / joined message
 	public void addToList(Node nodeToAdd)
 	{
-		if (!connections.contains(nodeToAdd))
+
+		if (!nodeInList(nodeToAdd))
 		{
 			connections.add(nodeToAdd);
 		}
 	}
 
+	// removes a node from the connections list
+	// called upon receiving leave message
 	public void removeFromList(Node nodeToRemove)
 	{
-		connections.remove(nodeToRemove);
+		int index = 0;
+		int removeIndex = 0;
+		for( Node item : connections )
+		{
+			if (item.isEqual(nodeToRemove))
+			{
+				removeIndex = index;
+			}
+			index ++;
+		}
+		connections.remove(removeIndex);
 	}
 
-	public void sendToConnections(Message msg)
+	// compares two nodes port numbers / ip to determine if they are equal
+	public boolean isEqual(Node node)
 	{
-		for (Node receivingNode: connections)
-		{
-			sender = new Sender(this, receivingNode, msg);
-		}
+		return (getPort() == node.getPort());
 	}
+
+	// starts the sender thread
+	public void startSenderThread(int port, String host, Message msg, boolean firstNode)
+	{
+		new Thread(new Sender(this, port, host, msg, firstNode)).start();
+	}
+
+	// returns true if 'node' is in connections list
+	public boolean nodeInList(Node node)
+	{
+		for( Node item : connections )
+		{
+			if (item.isEqual(node))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	// clears connections list. called when a node sends a leave message
+	public void clearConnections()
+	{
+		connections = new ArrayList<Node>();
+		leftChat = true;
+	}
+
+	// returns true if the node is participating in a chat.
+	// false if the node has left the chat.
+	public boolean isInChat()
+	{
+		return !leftChat;
+	}
+
+
 
 }

@@ -8,8 +8,6 @@ public class Message implements MessageTypes, Serializable
   String msgText;
   Node sender;
 
-
-
   public Message(Node sender)
   {
 	  this.sender = sender;
@@ -23,8 +21,8 @@ public class Message implements MessageTypes, Serializable
 
   public String constructMessage ()
   {
-	String message = sender.name + ": " + msgText;
-    return msgText;
+	String message = sender.getName() + ": " + msgText;
+    return message;
   }
 
 

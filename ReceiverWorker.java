@@ -40,13 +40,10 @@ public class ReceiverWorker implements MessageTypes, Runnable
 			// create a data output stream to the client
             outputStream = new ObjectOutputStream(os);
 
-			//send connection message to client
-            // toClient.writeBytes("Connected\n");
-
-			// loop while a byte is read from the client,
-			// store byte in the first element of inData array.
-
+			// read input and convert it to a message
 			this.message = (Message) inputStream.readObject();
+
+			// get sender of the message
 			Node sendingNode = message.getSendingNode();
 
 			int msgType = message.getType();
@@ -74,20 +71,19 @@ public class ReceiverWorker implements MessageTypes, Runnable
 				  break;
 
 				case LEAVE:
+				  // remove sending node from parent node list
 				  parentNode.removeFromList(sendingNode);
+				  // display leave message
 				  System.out.println(message.constructMessage());
 				  break;
 			}
-
-      System.out.println("before closing ");
-      clientSocket.close();
+			// close the socket
+	      	clientSocket.close();
 
         }
 		catch (IOException | ClassNotFoundException e)
 		{
 			System.err.println(e);
 		}
-
     }
-
 }
