@@ -51,43 +51,43 @@ public class Node implements Serializable
             System.exit(1);
         }
 
-    }
+    	}
 
-	// Node constructor method.
-	// Initializes member variables, starts receiver thread
-	public Node(String ip, int existingPort, String name)
-	{
-		this.hostName = ip;
-		this.portNumber = existingPort + 1;
-		this.name = name;
-		this.connections = new ArrayList<Node>();
-		this.leftChat = false;
-	  	new Thread(new Receiver( this )).start();
+		// Node constructor method.
+		// Initializes member variables, starts receiver thread
+		public Node(String ip, int existingPort, String name)
+		{
+			this.hostName = ip;
+			this.portNumber = existingPort + 1;
+			this.name = name;
+			this.connections = new ArrayList<Node>();
+			this.leftChat = false;
+		  new Thread(new Receiver( this )).start();
 
-	}
-
-
-
-	// clones the current list of nodes from another node
-	// used to obtain nodelist upon sending join message
-	public void cloneList( ArrayList<Node> chatList )
-	{
-		connections = new ArrayList<Node>();
-		for( Node item : chatList ) connections.add( item );
-	}
+		}
 
 
-	// returns portNumber
+
+		// clones the current list of nodes from another node
+		// used to obtain nodelist upon sending join message
+		public void cloneList( ArrayList<Node> chatList )
+		{
+			connections = new ArrayList<Node>();
+			for( Node item : chatList ) connections.add( item );
+		}
+
+
+		// returns portNumber
     public int getPort()
     {
     	return portNumber;
     }
 
-	// returns hostName
-	public String getIp()
-	{
-		return hostName;
-	}
+		// returns hostName
+		public String getIp()
+		{
+			return hostName;
+		}
 
 	// returns node name
     public String getName()

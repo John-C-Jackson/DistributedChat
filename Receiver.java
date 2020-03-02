@@ -23,6 +23,7 @@ public class Receiver implements Runnable
 			serverSocket = new ServerSocket(parentNode.getPort());
 			System.out.println("Your port number is: " + parentNode.getPort() +
 				". Other nodes can use this to join the chat.");
+			System.out.println("To leave the chat type: leave");
 
 			boolean inChat = true;
 			// while the server socket is active
@@ -37,7 +38,7 @@ public class Receiver implements Runnable
 		    	// creates a client socket that the server socket has connected to
 		        Socket cSocket = serverSocket.accept();
 
-		        // creates a new thread with the runHolder
+		        // creates a new thread while calling the ReceiverWorker
 		        Thread threadHolder = new Thread(new ReceiverWorker(cSocket,parentNode ));
 
 		        // starts the thread
@@ -53,12 +54,5 @@ public class Receiver implements Runnable
 		}
 	}
 
-
-
-
-  // public ServerSocket getServerSocket()
-  // {
-	//   return serverSocket;
-  // }
 
 }

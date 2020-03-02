@@ -36,46 +36,48 @@ public class ReceiverWorker implements MessageTypes, Runnable
 		// open a data input stream from the client.
         try
         {
-			inputStream = new ObjectInputStream(io);
-			// create a data output stream to the client
-            outputStream = new ObjectOutputStream(os);
+    			inputStream = new ObjectInputStream(io);
+    			// create a data output stream to the client
+          outputStream = new ObjectOutputStream(os);
 
-			// read input and convert it to a message
-			this.message = (Message) inputStream.readObject();
+    			// read input and convert it to a message
+    			this.message = (Message) inputStream.readObject();
 
-			// get sender of the message
-			Node sendingNode = message.getSendingNode();
+    			// get sender of the message
+    			Node sendingNode = message.getSendingNode();
 
-			int msgType = message.getType();
+          // get the type of message
+    			int msgType = message.getType();
 
-			switch (msgType)
-			{
-				case JOIN:
-				  // update list with new node
-				  parentNode.addToList(sendingNode);
+          // checks the type
+    			switch (msgType)
+    			{
+    				case JOIN:
+    				  // update list with new node
+    				  parentNode.addToList(sendingNode);
+              
+    				  // send parent node, so the its list can be obtained
+    				  outputStream.writeObject(parentNode);
+    				  break;
 
-				  // send parent node, so the its list can be obtained
-				  outputStream.writeObject(parentNode);
-				  break;
+    				case JOINED:
+    				  // update list with new node
+    				  parentNode.addToList(sendingNode);
+    				  // display joined message
+    				  System.out.println(message.constructMessage());
+    				  break;
 
-				case JOINED:
-				  // update list with new node
-				  parentNode.addToList(sendingNode);
-				  // display joined message
-				  System.out.println(message.constructMessage());
-				  break;
+    				case NOTE:
+    				  // display note message
+    				  System.out.println(message.constructMessage());
+    				  break;
 
-				case NOTE:
-				  // display note message
-				  System.out.println(message.constructMessage());
-				  break;
-
-				case LEAVE:
-				  // remove sending node from parent node list
-				  parentNode.removeFromList(sendingNode);
-				  // display leave message
-				  System.out.println(message.constructMessage());
-				  break;
+    				case LEAVE:
+    				  // remove sending node from parent node list
+    				  parentNode.removeFromList(sendingNode);
+    				  // display leave message
+    				  System.out.println(message.constructMessage());
+    				  break;
 			}
 			// close the socket
 	      	clientSocket.close();

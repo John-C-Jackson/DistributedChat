@@ -143,6 +143,8 @@ public class Sender implements MessageTypes, Runnable
 						sendMessage();
 					}
 				}
+				// close client socket 
+				socket.close();
 
 			}
 			// else if sending a leave message
@@ -150,6 +152,7 @@ public class Sender implements MessageTypes, Runnable
 			{
 				// send out message
 				outputStream.writeObject(currentMsg);
+
 
 			}
 			// otherwise, sending a note message
