@@ -25,7 +25,20 @@ public class Node
 
 			// construct and send join message
 			JoinMessage msg = new JoinMessage(chatNode);
+
+System.out.println(chatNode.hostName);
+System.out.println(chatNode.portNumber);
+System.out.println(chatNode.name);
+
+System.out.println("before chatNode.sendToConnections");
+
+System.out.println(msg + "--------------------  the message contains -------------");
+
 			chatNode.sendToConnections(msg);
+
+
+
+System.out.println("after sendToConnectionss");
 
         }
 
@@ -33,6 +46,7 @@ public class Node
         else if ( args.length == 2)
         {
 			Node chatNode = new Node(args[0], 4000, args[1]);
+
 
 			System.out.println("Concurrency");
         }
@@ -51,7 +65,9 @@ public class Node
 		this.hostName = ip;
 		this.portNumber = port;
 		this.name = name;
-		receiver = new Receiver(this);
+	  (new Thread(new Receiver( this ))).start();
+//			addToList(this);
+
 	}
 
 	/*

@@ -7,7 +7,7 @@ public class ReceiverWorker implements MessageTypes, Runnable
 {
   int inImportNumber;
   Message message;
-  private Socket clientSocket;
+  Socket clientSocket;
   ObjectInputStream inputStream;
   ObjectOutputStream outputStream;
   InputStream io;
@@ -17,7 +17,7 @@ public class ReceiverWorker implements MessageTypes, Runnable
   ReceiverWorker(Socket clientSocket, Node parentNode)
   {
     this.clientSocket = clientSocket;
-	this.parentNode = parentNode;
+	  this.parentNode = parentNode;
   }
 
     @Override
@@ -78,6 +78,10 @@ public class ReceiverWorker implements MessageTypes, Runnable
 				  System.out.println(message.constructMessage());
 				  break;
 			}
+
+      System.out.println("before closing ");
+      clientSocket.close();
+
         }
 		catch (IOException | ClassNotFoundException e)
 		{
