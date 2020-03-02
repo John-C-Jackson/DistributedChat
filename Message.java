@@ -6,13 +6,13 @@ public class Message implements MessageTypes, Serializable
   private static final long serialVersionUID = 9185401210109757710L;
   int type;
   String msgText;
-  String senderName;
+  Node sender;
 
 
 
-  public Message(String sender)
+  public Message(Node sender)
   {
-	  this.senderName = sender;
+	  this.sender = sender;
   }
 
   public int getType ()
@@ -23,7 +23,7 @@ public class Message implements MessageTypes, Serializable
 
   public String constructMessage ()
   {
-	String message = senderName + ": " + msgText;
+	String message = sender.name + ": " + msgText;
     return msgText;
   }
 
@@ -50,6 +50,11 @@ public class Message implements MessageTypes, Serializable
 		  	outString = "has left the chat.";
 	  }
 	  return outString;
+  }
+
+  public Node getSendingNode()
+  {
+	  return sender;
   }
 
 }

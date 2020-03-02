@@ -7,7 +7,7 @@ public class JoinedMessage extends Message
      */
     private static final long serialVersionUID = -9115597487811740477L;
 
-	public JoinedMessage(String sender)
+	public JoinedMessage(Node sender)
 	{
 		super(sender);
 		this.type = JOINED;

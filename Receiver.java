@@ -2,18 +2,48 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
-public class Receiver
+public class Receiver 
 {
   int inImportNumber;
-  String message;
+  ReceiverWorker runHolder;
+  Thread threadHolder;
+  Node parentNode;
+  ServerSocket serverSocket;
 
-  /*
-  somewhere here do we unload the message to send as a string?
-  and then send it to ReceiverWorker ??
-  or do we send ReceiverWorker a object and then ReceiverWorker unpacks? 
-  **/
+  //
+  public Receiver(Node parentNode){
+	  this.parentNode = parentNode;
+	  try
+	    {
+			serverSocket = new ServerSocket(parentNode.getPort());
+			// does this loop need to be in a thread or something?
+			// worried that the loop will stop the rest of the program from running
+	        // while the server socket is active
+	        while(true)
+	        {
+				// PRINT STATEMENT FOR INITIAL TESTING... REMOVE LATER
+				System.out.println("running...");
+	            // crreates a client socket that the server socket has connected to
+	            Socket cSocket = serverSocket.accept();
+	            // creates a run of the program with clientSocket (cSocket)
+	            Runnable runHolder = new ReceiverWorker(cSocket, parentNode);
+	            // creates a new thread with the runHolder
+	            Thread threadHolder = new Thread(runHolder);
+	            // starts the thread
+	            threadHolder.start();
+	        }
+	    }
+	catch (IOException e)
+	{
+		System.err.println(e);
+	}
 
-  Runnable runHolder = new ReceiverWorker(inImportNumber, message);
-  Thread threadHolder = new Thread(runHolder);
-  threadHolder.start();
+
+  }
+
+  public ServerSocket getServerSocket()
+  {
+	  return serverSocket;
+  }
+
 }

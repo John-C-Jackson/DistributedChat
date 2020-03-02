@@ -4,77 +4,114 @@ import java.util.*;
 
 public class Node
 {
-	Sender sender = new Sender();
-	Receiver receiver = new Receiver();
-	ArrayList<Node> nodeList;
-	static String hostName;
-	static int portNumber;
-	static String name;
+	public Sender sender;
+	public Receiver receiver;
+	public ArrayList<Node> connections;
+	public String hostName;
+	public int portNumber;
+	public String name;
 
     public static void main(String[] args) throws IOException
     {
+
+
+		//instantiate receiver / sender.
+		// while loop that takes in input and pumps to sender
+
     	// not the first node
     	if (args.length == 3)
     	{
-    		hostName = args[0];
-    		portNumber = Integer.parseInt(args[1]);
-    		name = args[2];  
-        } 
-        
-        // first node
-        else if ( args.length == 2) 
-        {
-        	hostName = args[0];
-        	name = args[1];
-        	portNumber = 4000;
+			Node chatNode = new Node(args[0], Integer.parseInt(args[1]), args[2]);
+
+			// construct and send join message
+			JoinMessage msg = new JoinMessage(chatNode);
+			chatNode.sendToConnections(msg);
+
         }
-        
+
+        // first node
+        else if ( args.length == 2)
+        {
+			Node chatNode = new Node(args[0], 4000, args[1]);
+
+			System.out.println("Concurrency");
+        }
+
         else
         {
             System.err.println(
                 "Usage: (first node in network): \njava Node <host name> [<port name>] <your name>\n");
             System.exit(1);
         }
-      
+
     }
-    
+
+	public Node(String ip, int port, String name)
+	{
+		this.hostName = ip;
+		this.portNumber = port;
+		this.name = name;
+		receiver = new Receiver(this);
+	}
+
 	/*
 		When this node joins the network, updateList()
 		clones the current list of nodes from another node
 	*/
-	public ArrayList<Node> cloneList( ArrayList<Node> chatList )
+	public void cloneList( ArrayList<Node> chatList )
 	{
-		nodeList = new ArrayList<Node>();
-		for( Node item : chatList ) nodeList.add( item );
+		connections = new ArrayList<Node>();
+		for( Node item : chatList ) connections.add( item );
 	}
-	
+
 	// first thing to run
 	// calls Sender
-	public void join();
-	
+	// public void join();
+
     public int getPort()
     {
     	return portNumber;
     }
-    
+
+	public String getIp()
+	{
+		return hostName;
+	}
+
     public String getName()
     {
     	return name;
     }
-    
-    public ArrayList<Node> getNodeList()
-    {
-    	return nodeList;
-    }
 
-	public void addNode( Node joiningNode )
+	public ArrayList<Node> getConnections()
 	{
-		nodeList.add( joiningNode );
+		return connections;
 	}
-	
-	public void deleteNode( Node leavingNode )
+
+	public Receiver getReceiver()
 	{
-		nodeList.remove( leavingNode );
+		return receiver;
 	}
-	
+
+	public void addToList(Node nodeToAdd)
+	{
+		if (!connections.contains(nodeToAdd))
+		{
+			connections.add(nodeToAdd);
+		}
+	}
+
+	public void removeFromList(Node nodeToRemove)
+	{
+		connections.remove(nodeToRemove);
+	}
+
+	public void sendToConnections(Message msg)
+	{
+		for (Node receivingNode: connections)
+		{
+			sender = new Sender(this, receivingNode, msg);
+		}
+	}
+
 }
